@@ -93,25 +93,13 @@ Load the packages used in this notebook:
 
 ``` r
 library(dplyr) # A Grammar of Data Manipulation
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
 library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics
 library(glue) # Interpreted String Literals
 library(here) # A Simpler Way to Find Your Files
-#> here() starts at C:/Antonio/Rtistry/elemental-topographies
 library(MetBrewer) # Color Palettes Inspired by Works at the Metropolitan Museum of Art
 library(metR) # For contouring 
 #> Warning: package 'metR' was built under R version 4.2.2
 library(MexBrewer) # Color Palettes Inspired by Works of Mexican Muralists
-#> Registered S3 method overwritten by 'MexBrewer':
-#>   method        from     
-#>   print.palette MetBrewer
 ```
 
 ## Simple non-periodic function
@@ -156,16 +144,7 @@ max_z = max(df$z)
 ggplot(data = df) +
   geom_contour_filled(aes(x = x, y = y, z = z),
                       alpha = 1,
-                      #breaks = c(min_z, -0.75, -0.25, 0.25, max_z),
                       breaks = c(min_z, -1.75, -1, -0.25, 0.5, 0.75, 1.5, max_z)) +
-  # geom_contour(aes(#colour = factor(after_stat(level)),
-  #   x = x + 0.10,
-  #   y = y - 0.10, 
-  #   z = z),
-  #   breaks = 0.1 + c(-0.75, -0.25, 0.25, 0.5, 0.75),
-  #   color = "lightgray"
-  # ) +
-  #geom_contour_tanaka() + 
   scale_fill_manual(values = sample(cols, 11)) +
   coord_equal() +
   theme_void()  +
@@ -281,7 +260,6 @@ max_z = max(df$z)
 ggplot(data = df) +
   geom_contour_filled(aes(x = x, y = y, z = z),
                       alpha = 1,
-                      #breaks = c(min_z, -0.75, -0.25, 0.25, max_z),
                       breaks = c(min_z, -1.75, -0.25, 0, 0.25, 1, max_z)) +
   scale_fill_manual(values = sample(cols, 11)) +
   coord_equal() +
@@ -343,8 +321,7 @@ ggplot(data = df) +
                    y = y - 0.10, 
                    z = z),
                breaks = 0.1 + c(-2.0, -0.75, 0.0, 1.75),
-               color = "black"
-  ) +
+               color = "black") +
   scale_fill_manual(values = sample(cols, 11)) +
   coord_equal() +
   theme_void() +
@@ -366,8 +343,7 @@ ggplot(data = df) +
                    y = y - 0.10, 
                    z = z),
                breaks = 0.1 + c(-2.0, -0.75, 0.0, 1.75),
-               color = "black"
-  ) +
+               color = "black") +
   scale_fill_manual(values = sample(cols, 11)) +
   coord_equal() +
   theme_void() +
@@ -439,8 +415,7 @@ ggplot() +
   geom_contour_filled(data = df_2,
                       aes(x = x, 
                           y = y, 
-                          z = z,
-                          alpha = factor(after_stat(level))),
+                          z = z),
                       breaks = c(min_z, 0.75, 3, 6, max_z)) +
   scale_fill_manual(values = sample(cols, 11)) +
   coord_equal() +
@@ -453,7 +428,9 @@ ggplot() +
 In this next figure, the contours of $z_2$ are overlaid on top of the
 contours of $z_1$. Parameer `alpha` controls the transparency of the
 filled contours; setting it to zero makes the contour transparent, while
-setting it to one makes it completely opaque:
+setting it to one makes it completely opaque. Interestingly, the second
+set of contours with controlled transparency also determines what we
+choose to see of the first surface:
 
 ``` r
 ggplot() +
