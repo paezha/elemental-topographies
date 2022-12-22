@@ -94,6 +94,8 @@ Load the packages used in this notebook:
 ``` r
 library(dplyr) # A Grammar of Data Manipulation
 library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics
+library(ghibli) # Studio Ghibli Colour Palettes
+#> Warning: package 'ghibli' was built under R version 4.2.2
 library(glue) # Interpreted String Literals
 library(here) # A Simpler Way to Find Your Files
 library(MetBrewer) # Color Palettes Inspired by Works at the Metropolitan Museum of Art
@@ -198,8 +200,8 @@ ggplot(data = df) +
 <!--
 Minimal tootable version:
 
-library(dplyr)
-library(ggplot2)
+library(dplyr) # A Grammar of Data Manipulation
+library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics
 
 df<-expand.grid(x = seq(-2*pi,2*pi,0.1),y=seq(-2*pi,2*pi,0.1)) |>
 mutate(z=sin(x)*sin(y))
@@ -453,3 +455,114 @@ ggplot() +
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+## Increasing the range of emergent outcomes
+
+The preceding maps incorporate only one element of randomness, the
+colors assigned to the filled contours. Here I modify the system (using
+a parametric equation similar to that used in Figure 5e in Puc and
+Skrekovski) to increase the range of emergent outcome. To do this, I add
+randomness to several features of the equation that generates the
+surface, to the selection of cut points, and the choice of color
+palette.
+
+Note that when variables `a`, `b`, and `c` are 1, and variables `p`,
+`q`, and `r` are also 1, the equation is identical to the one used to
+create Figure 5e in Puc and Skrekovski.
+
+``` r
+# Randomly select a random seed
+seed <- sample.int(100000000, 1)
+
+# Set random seed
+set.seed(seed)
+
+# This is a fail-safe check; to ensure that the surface is not empty, at least one component must be different from zero. Variables a, b, and c are multiplicative parameters for the trigonometric functions
+s <- 0
+while(s == 0){
+  a <- sample(c(-2, -1, 0, 1, 2), 1)
+  b <- sample(c(-2, -1, 0, 1, 2), 1)
+  c <- sample(c(-2, -1, 0, 1, 2), 1)
+  s <- a + b + c
+}
+
+# The next three variables are denominators used in the arguments of the trigonometric functions
+p <- sample(c(1, 2, 3), 1)
+q <- sample(c(1, 2, 3), 1)
+r <- sample(c(1, 2, 3), 1)
+
+# Generate a grid in the selected domain and compute the values of z (i.e., the surface)
+df <- expand.grid(x = seq(-3.5 * pi, 2.5 * pi, 0.1),
+                  y = seq(-3.5 * pi, 2.5 * pi, 0.1)) |>
+  mutate(x = x,
+         y = y,
+         # Notice that the equation is modified by a, b, c, and p, q, r
+         z = a * sin(x/p) +  b * sin(y/q) + c * sin((x + y)/r))
+
+# Select a collection of color palettes
+edition <- sample(c("MexBrewer", "MetBrewer", "ghibli"), 1)
+
+if(edition=="MexBrewer"){
+  # Randomly select a color palette (MexBrewer Edition)
+  palette_name <- sample(c("Alacena", "Atentado", "Aurora", "Concha", "Frida", "Revolucion", "Ronda", "Tierra"), 1)
+  cols <- mex.brewer(palette_name, n = 7)
+  
+}else if(edition=="MetBrewer"){
+  # Randomly select a color palette (MetBrewer Edition)
+  palette_name <- sample(c("Archambault", "Austria", "Benedictus", "Cassatt1", "Cassatt2", "Cross", "Degas", "Demuth", "Derain", "Egypt", "Gauguin", "Greek", "Hiroshige", "Hokusai1", "Hokusai2", "Hokusai3", "Homer1", "Homer2", "Ingres", "Isfahan1", "Isfahan2", "Java", "Johnson", "Juarez", "Kandinsky", "Klimt", "Lakota", "Manet", "Monet", "Moreau", "Morgenstern", "Nattier", "Navajo", "NewKingdom", "Nizami", "OKeeffe1", "OKeeffe2", "Paquin", "Peru1", "Peru2", "Pillement", "Pissaro", "Redon", "Renoir", "Signac", "Tam", "Tara", "Thomas", "Tiepolo", "Troy", "Tsimshian", "VanGogh1", "VanGogh2", 'VanGogh3', "Veronese", "Wissing"), 1)
+  cols <- met.brewer(palette_name, n = 7)
+}else if(edition=="ghibli"){
+  palette_name <- sample(c("MarnieLight1", "MarnieMedium1", "MarnieDark1", "MarnieLight2", "MarnieMedium2", "MarnieDark2", "PonyoLight", "PonyoMedium", "PonyoDark", "LaputaLight", "LaputaMedium", "LaputaDark", "MononokeLight", "MononokeMedium", "MononokeDark", "SpiritedLight", "SpiritedMedium", "SpiritedDark", "YesterdayLight", "YesterdayMedium", "YesterdayDark", "KikiLight", "KikiMedium", "KikiDark", "TotoroLight", "TotoroMedium", "TotoroDark"), 1)
+  cols <- ghibli::ghibli_palette(palette_name, n = 7)
+}
+
+# Identify the range of the surface
+min_z = min(df$z)
+max_z = max(df$z)
+
+# Initialize two vectors to store the cut points for two sets of contours
+z_c_1 <- min_z
+z_c_2 <- min_z
+
+# Randomly select the number of cut points for each of two sets of contours
+c_1 <- sample(c(2, 3, 4, 5), 1)
+c_2 <- sample(c(2, 3, 4, 5), 1)
+
+# Randomly select the cut points for the first set of contours
+for(i in 2:c_1){
+  z_c_1[i] <- runif(1, z_c_1[i-1], max_z)
+}
+
+# Randomly select the cut points for the second set of contours
+for(i in 2:c_2){
+  z_c_2[i] <- runif(1, z_c_2[i-1], max_z)
+}
+
+# Render the plot
+ggplot(data = df) +
+  # First set of contours are filled
+  geom_contour_filled(aes(x = x, y = y, z = z),
+                      # Use the randomly selected cut points
+                      breaks = c(min_z, z_c_1, max_z)) +
+  # Second set of contours are lines
+  geom_contour(aes(x = x + 0.10,
+                   y = y - 0.10, 
+                   z = z),
+               # Use the randomly selected cut points
+               breaks = z_c_2,
+               # Randomly select one of three colors for the second set of contours
+               color = sample(c("white", "darkgray", "black"), 1)) +
+  # Sample from the color palette for the filled contours
+  scale_fill_manual(values = sample(cols, 7)) +
+  # Adjust presentation and the theme
+  coord_equal() +
+  theme_void() +
+  theme(legend.position = "none")
+
+ggsave(paste0(here::here(),
+              glue::glue("/outputs/elemental-topography-{seed}.png")), 
+       height = 5, 
+       width = 5)
+```
+
+<img src="outputs/elemental-topography-21880180.png" width="500px" />
