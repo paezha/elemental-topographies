@@ -95,12 +95,10 @@ Load the packages used in this notebook:
 library(dplyr) # A Grammar of Data Manipulation
 library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics
 library(ghibli) # Studio Ghibli Colour Palettes
-#> Warning: package 'ghibli' was built under R version 4.2.2
 library(glue) # Interpreted String Literals
 library(here) # A Simpler Way to Find Your Files
 library(MetBrewer) # Color Palettes Inspired by Works at the Metropolitan Museum of Art
 library(metR) # For contouring 
-#> Warning: package 'metR' was built under R version 4.2.2
 library(MexBrewer) # Color Palettes Inspired by Works of Mexican Muralists
 ```
 
@@ -210,6 +208,16 @@ ggplot(data = df) +
 geom_contour_filled(aes(x,y,z=z),
 breaks = c(-Inf,-0.75,-0.25,0.25,0.5,0.75,Inf)) +
 coord_equal()+theme_void()+theme(legend.position="none")
+
+Minimal tootable version:
+
+library(dplyr)
+library(ggplot2)
+
+df<-expand.grid(x = seq(-3.5*pi,2.5*pi,0.1),y=seq(-1.5*pi,2.5*pi,0.1)) |> mutate(z=sin(x)-sin(y))
+ggplot(data = df) + geom_contour_filled(aes(x,y,z=z),breaks = c(-Inf,-1.75,-1.25,0.00,0.5,1.75,Inf))+scale_fill_hue()+coord_equal()+theme_void()+theme(legend.position="none")
+
+ggsave("experimental/tootable-sample-3.png", width = 7, height = 4.65)
 -->
 
 Still using the same surface, breaks, and color palette, notice the
@@ -504,7 +512,7 @@ edition <- sample(c("MexBrewer", "MetBrewer", "ghibli"), 1)
 
 if(edition=="MexBrewer"){
   # Randomly select a color palette (MexBrewer Edition)
-  palette_name <- sample(c("Alacena", "Atentado", "Aurora", "Concha", "Frida", "Revolucion", "Ronda", "Tierra"), 1)
+  palette_name <- sample(c("Alacena", "Atentado", "Aurora", "Concha", "Frida", "Maiz", "Naturaleza", "Revolucion", "Ofrenda", "Ronda", "Tierra", "Vendedora"), 1)
   cols <- mex.brewer(palette_name, n = 7)
   
 }else if(edition=="MetBrewer"){
@@ -565,4 +573,4 @@ ggsave(paste0(here::here(),
        width = 5)
 ```
 
-<img src="outputs/elemental-topography-21880180.png" width="500px" />
+<img src="outputs/elemental-topography-52588213.png" width="500px" />
