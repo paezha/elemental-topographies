@@ -140,7 +140,7 @@ ggplot(data = df) +
 ```
 
 <!--
-Minimal tootable version:
+-- Minimal tootable version:
 
 library(dplyr) # A Grammar of Data Manipulation
 library(ggplot2) # Create Elegant Data Visualisations Using the Grammar of Graphics
@@ -153,7 +153,7 @@ geom_contour_filled(aes(x,y,z=z),
 breaks = c(-Inf,-0.75,-0.25,0.25,0.5,0.75,Inf)) +
 coord_equal()+theme_void()+theme(legend.position="none")
 
-Minimal tootable version:
+-- Minimal tootable version:
 
 library(dplyr)
 library(ggplot2)
@@ -162,6 +162,118 @@ df<-expand.grid(x = seq(-3.5*pi,2.5*pi,0.1),y=seq(-1.5*pi,2.5*pi,0.1)) |> mutate
 ggplot(data = df) + geom_contour_filled(aes(x,y,z=z),breaks = c(-Inf,-1.75,-1.25,0.00,0.5,1.75,Inf))+scale_fill_hue()+coord_equal()+theme_void()+theme(legend.position="none")
 
 ggsave("experimental/tootable-sample-3.png", width = 7, height = 4.65)
+
+-- Minimal tootable version:
+
+library(dplyr)
+library(ggplot2)
+
+df<-expand.grid(x = seq(-3*pi,3*pi,0.1),y=seq(-3*pi,3*pi,0.1)) |> mutate(z= (sin(x)+sin(y)) - 0.5 * sqrt(x^2 + y^2))
+ggplot(data = df) + geom_contour_filled(aes(x,y,z=z),breaks = c(-Inf,-6.8,-5.5,-4.5,-3.25,-2.4,-1.5,-0.40,0, 0.5,Inf))+scale_fill_hue()+coord_equal()+theme_void()+theme(legend.position="none")
+
+ggsave("experimental/tootable-sample-4.png", width = 7, height = 7)
+
+-- Minimal tootable version:
+
+library(dplyr)
+library(ggplot2)
+
+df<-expand.grid(x = seq(-3*pi,3*pi,0.1),y=seq(-3*pi,3*pi,0.1)) |> mutate(z= (sin(x/3)-sin(y/5)))
+ggplot(data = df) + geom_contour_filled(aes(x,y,z=z),breaks = c(-Inf,-6.8,-5.5,-4.5,-3.25,-2.4,-1.5,-0.40,0, 0.5,Inf))+scale_fill_viridis_d()+coord_polar()+theme_void()+theme(legend.position="none")
+
+ggsave("experimental/tootable-sample-5.png", width = 7, height = 7)
+
+3-D version:
+
+min_x <- min(df$x)
+max_x <- max(df$x)
+range_x <- max_x - min_x
+
+df <- df |>
+  mutate(theta = 2 * pi * (x-min_x)/range_x,
+         x_p = y * sin(theta),
+         y_p = y * cos(theta))
+
+p1 <- ggplot(data = df, aes(x = x_p, y = y_p, color = z)) + geom_point() + scale_color_viridis_c(option="H") + coord_equal() + theme(legend.position = "none")
+
+plot_gg(p1, width = 7, height = 7, scale = 300, multicore = TRUE, windowsize = c(1000, 1000))
+render_camera(fov = 70, zoom = 0.75, theta = -30, phi = 45)
+render_snapshot(filename = "experimental/tootable-sample-5-3D.png", clear = TRUE)
+
+-- Minimal tootable version:
+
+library(dplyr)
+library(ggplot2)
+
+df<-expand.grid(x = seq(-0*pi,3*pi,0.1),y=seq(-0*pi,3*pi,0.1)) |> mutate(z= (0.5 * y - sin(y) + sin(x)))
+ggplot(data = df) + geom_contour_filled(aes(x,y,z=z),breaks = c(-Inf,-0.8,-0.0,1.5,2.25,2.4,3.5,4.40,Inf))+scale_fill_viridis_d(option="H")+coord_polar()+theme_void()+theme(legend.position="none")
+
+ggsave("experimental/tootable-sample-6.png", width = 7, height = 7)
+
+3-D version:
+
+min_x <- min(df$x)
+max_x <- max(df$x)
+range_x <- max_x - min_x
+
+df <- df |>
+  mutate(theta = 2 * pi * (x-min_x)/range_x,
+         x_p = y * sin(theta),
+         y_p = y * cos(theta))
+
+p1 <- ggplot(data = df, aes(x = x_p, y = y_p, color = z)) + geom_point() + scale_color_viridis_c(option="H") + coord_equal() + theme(legend.position = "none")
+
+plot_gg(p1, width = 7, height = 7, scale = 300, multicore = TRUE, windowsize = c(1000, 1000))
+render_camera(fov = 70, zoom = 0.75, theta = -30, phi = 45)
+render_snapshot(filename = "experimental/tootable-sample-6-3D.png", clear = TRUE)
+
+-- Minimal tootable version:
+
+library(dplyr)
+library(ggplot2)
+
+df<-expand.grid(x = seq(-0*pi,3*pi,0.1),y=seq(-0*pi,3.5*pi,0.1)) |> mutate(z= (-0.05 * y + sin(y/2) - sin(x/3)))
+ggplot(data = df) + geom_contour_filled(aes(x,y,z=z),breaks = c(-Inf,-0.5,-0.2,0,0.25,0.75,1.2,1.7,2.40,Inf))+scale_fill_viridis_d(option="H")+coord_polar()+theme_void()+theme(legend.position="none")
+
+ggsave("experimental/tootable-sample-7.png", width = 7, height = 7)
+
+3-D version:
+
+min_x <- min(df$x)
+max_x <- max(df$x)
+range_x <- max_x - min_x
+
+df <- df |>
+  mutate(theta = 2 * pi * (x-min_x)/range_x,
+         x_p = y * sin(theta),
+         y_p = y * cos(theta))
+
+p1 <- ggplot(data = df, aes(x = x_p, y = y_p, color = z)) + geom_point() + scale_color_viridis_c(option="H") + coord_equal() + theme(legend.position = "none")
+
+plot_gg(p1, width = 7, height = 7, scale = 300, multicore = TRUE, windowsize = c(1000, 1000))
+render_camera(fov = 70, zoom = 0.75, theta = -30, phi = 45)
+render_snapshot(filename = "experimental/tootable-sample-7-3D.png", clear = TRUE)
+
+-- Minimal tootable version:
+
+library(dplyr)
+library(ggplot2)
+
+df<-expand.grid(x = seq(-0*pi,3*pi,0.1),y=seq(-0*pi,1.5*pi,0.1)) |> mutate(z= (0.5 * y - sin(y) + sin(x)))
+ggplot(data = df) + geom_contour_filled(aes(x,y,z=z),breaks = c(-Inf,-0.8,-0.0,1.5,2.25,2.4,3.5,4.40,Inf))+scale_fill_viridis_d(option="H")+coord_polar()+theme_void()+theme(legend.position="none")
+
+ggsave("experimental/tootable-sample-8.png", width = 7, height = 7)
+
+
+---->
+
+```{r}
+df<-expand.grid(x = seq(-0*pi,3*pi,0.1),y=seq(-0*pi,3.5*pi,0.1)) |> mutate(z= (-0.05 * y + sin(y/2) - sin(x/3)))
+
+```
+
+
+
 -->
 
 Still using the same surface, breaks, and color palette, notice the playful effect achieved by overlaying a set of contour lines that have been shifted a small distance on the plane:
